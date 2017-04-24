@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Location</title>
+</head>
+<body>
+    <div id="js-location" style="display: inline-block;">
+        <span>
+            <select name="location_0">
+                 <option value="">Pleacse enter ...</option>
+                <?php foreach($data as $key => $value) : ?>
+                    <option value="<?= $key?>"><?= $value?></option>
+                <?php endforeach;?>
+            </select>
+        </span>
+        <span>
+            <select name="location_1">
+                 <option value="">Pleacse enter ...</option>
+            </select>
+        </span>
+        <span>
+            <select name="location_2">
+                 <option value="">Pleacse enter ...</option>
+            </select>
+        </span>
+        <span>
+            <select name="location_3">
+                 <option value="">Pleacse enter ...</option>
+            </select>
+        </span>
+        <span>
+            <select name="location_4">
+                 <option value="">Pleacse enter ...</option>
+            </select>
+        </span>
+        <span>
+            <select name="location_5">
+                 <option value="">Pleacse enter ...</option>
+            </select>
+        </span>
+    </div>
+    <script type="text/javascript">
+        $('select[name="location_0"]').change(function () {
+            var next = $('select[name="location_1"]');
+
+            // init
+            option = document.createElement('option');
+            option.value = "";
+            option.innerHTML = "Pleacse enter ...";
+            next.html(option);
+
+            this.value &&
+            $.ajax({
+                'url': '<?= $this->url('mstorage/get-location')?>',
+                'data': {'id': this.value},
+                'type': 'GET',
+                'dataType': 'json',
+                'success': function (re) {
+                    if (re.status != 'ok') {
+                        return false;
+                    }
+
+                    for(key in re.data) {
+                        option = document.createElement('option');
+                        option.value = key;
+                        option.innerHTML = re.data[key];
+                        next.append(option);
+                    }
+                }
+            });
+        });
+
+        $('select[name="location_1"]').change(function () {
+            var next = $('select[name="location_2"]');
+
+            // init
+            option = document.createElement('option');
+            option.value = "";
+            option.innerHTML = "Pleacse enter ...";
+            next.html(option);
+
+            this.value &&
+            $.ajax({
+                'url': '<?= $this->url('mstorage/get-location')?>',
+                'data': {'id': this.value},
+                'type': 'GET',
+                'dataType': 'json',
+                'success': function (re) {
+                    if (re.status != 'ok') {
+                        return false;
+                    }
+
+                    for(key in re.data) {
+                        option = document.createElement('option');
+                        option.value = key;
+                        option.innerHTML = re.data[key];
+                        next.append(option);
+                    }
+                }
+            });
+        });
+
+        $('select[name="location_2"]').change(function () {
+            var next = $('select[name="location_3"]');
+
+            // init
+            option = document.createElement('option');
+            option.value = "";
+            option.innerHTML = "Pleacse enter ...";
+            next.html(option);
+
+            this.value &&
+            $.ajax({
+                'url': '<?= $this->url('mstorage/get-location')?>',
+                'data': {'id': this.value},
+                'type': 'GET',
+                'dataType': 'json',
+                'success': function (re) {
+                    if (re.status != 'ok') {
+                        return false;
+                    }
+
+                    for(key in re.data) {
+                        option = document.createElement('option');
+                        option.value = key;
+                        option.innerHTML = re.data[key];
+                        next.append(option);
+                    }
+                }
+            });
+        });
+
+        $('select[name="location_3"]').change(function () {
+            var next = $('select[name="location_4"]');
+
+            // init
+            option = document.createElement('option');
+            option.value = "";
+            option.innerHTML = "Pleacse enter ...";
+            next.html(option);
+
+            this.value &&
+            $.ajax({
+                'url': '<?= $this->url('mstorage/get-location')?>',
+                'data': {'id': this.value},
+                'type': 'GET',
+                'dataType': 'json',
+                'success': function (re) {
+                    if (re.status != 'ok') {
+                        return false;
+                    }
+
+                    for(key in re.data) {
+                        option = document.createElement('option');
+                        option.value = key;
+                        option.innerHTML = re.data[key];
+                        next.append(option);
+                    }
+                }
+            });
+        });
+
+        $('select[name="location_4"]').change(function () {
+            var next = $('select[name="location_5"]');
+
+            // init
+            option = document.createElement('option');
+            option.value = "";
+            option.innerHTML = "Pleacse enter ...";
+            next.html(option);
+
+            this.value &&
+            $.ajax({
+                'url': '<?= $this->url('mstorage/get-location')?>',
+                'data': {'id': this.value},
+                'type': 'GET',
+                'dataType': 'json',
+                'success': function (re) {
+                    if (re.status != 'ok') {
+                        return false;
+                    }
+
+                    for(key in re.data) {
+                        option = document.createElement('option');
+                        option.value = key;
+                        option.innerHTML = re.data[key];
+                        next.append(option);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
