@@ -1,7 +1,5 @@
 <?php
 
-include_once __DIR__ . "/fun.php";
-
 $pdo = linkPdo(array('dbName' => 'db_main', 'root' => 'root', 'password' => 'root'));
 
 $sql = "SELECT toponymy_id, toponymy_parent_id FROM t_toponymy WHERE toponymy_order = ''";
@@ -271,7 +269,7 @@ function curl($urlInfo, $type = "GET", $info = false) {
         "Upgrade-Insecure-Requests:1",
     );
     
-    $ch = curl_init();
+    $ch = curl_multi_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     if (isset($cookie)) {
         curl_setopt($ch, CURLOPT_COOKIE , $cookie);
