@@ -37,11 +37,11 @@ $preg = array(
 $link = array_values(array_filter(pregHtml($html, $preg['key'])));
 $name = array_values(array_filter(pregHtml($html, $preg['name'])));
 foreach ($link as $key => $value) {
-    $data_0[$name[$key]] = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2015/" . $value;
+    $data_0[$name[$key]] = array('url' => "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2015/" . $value);
 }
 
 $orderArr = array(18, 11);
-// print_r($data_0);die;
+$data_0 = curlMulti($data_0);
 foreach ($data_0 as $key => $value) {
     $parentId0 = 18;
     $sql = "SELECT toponymy_id FROM t_toponymy WHERE toponymy_name = '%s' AND toponymy_status = 1 AND toponymy_order = '%s'";
@@ -57,16 +57,15 @@ foreach ($data_0 as $key => $value) {
     $orderArr_0 = array_merge(array($id0), $orderArr);
     
     $data_1 = array();
-    $urlInfo = array('url' => $value);
-    $html = curl($urlInfo);
-    $html = @iconv("GBK", "UTF-8", $html);
+    $html = @iconv("GBK", "UTF-8", $value);
 
     $link = array_values(array_filter(pregHtml($html, $preg['key'])));
     $name = array_values(array_filter(pregHtml($html, $preg['name'])));
     foreach ($link as $key0 => $value) {
-        $data_1[$name[$key0]] = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2015/" . $value;
+        $data_1[$name[$key0]] = array('url' => "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2015/" . $value);
     }
 
+    $data_1 = curlMulti($data_1);
     foreach ($data_1 as $ke => $val) {
         $parentId1 = $id0;
         if (!in_array($ke, array("市辖区", "县", "省直辖县级行政区划", " 自治区直辖县级行政区划"))) {
@@ -87,17 +86,16 @@ foreach ($data_0 as $key => $value) {
         }
 
         $data_2 = array();
-        $urlInfo = array('url' => $val);
-        $html = curl($urlInfo);
-        $html = @iconv("GBK", "UTF-8", $html);
+        $html = @iconv("GBK", "UTF-8", $val);
 
         $link = array_values(array_filter(pregHtml($html, $preg['key'])));
         $name = array_values(array_filter(pregHtml($html, $preg['name'])));
         foreach ($link as $ke1 => $value) {
             $num = explode("/", $value)[1];
-            $data_2[$name[$ke1]] = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2015/" . substr($num, 0, 2) . "/" . $value;
+            $data_2[$name[$ke1]] = array('url' => "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2015/" . substr($num, 0, 2) . "/" . $value);
         }
 
+        $data_2 = curlMulti($data_2);
         foreach ($data_2 as $k => $v) {
             $parentId2 = $id1;
             $sql = "SELECT toponymy_id FROM t_toponymy WHERE toponymy_name = '%s' AND toponymy_status = 1 AND toponymy_order = '%s'";
@@ -113,17 +111,16 @@ foreach ($data_0 as $key => $value) {
             $orderArr_2 = array_merge(array($id2), $orderArr_1);
 
             $data_3 = array();
-            $urlInfo = array('url' => $v);
-            $html = curl($urlInfo);
-            $html = @iconv("GBK", "UTF-8", $html);
+            $html = @iconv("GBK", "UTF-8", $v);
 
             $link = array_values(array_filter(pregHtml($html, $preg['key'])));
             $name = array_values(array_filter(pregHtml($html, $preg['name'])));
             foreach ($link as $k2 => $value) {
                 $num = explode("/", $value)[1];
-                $data_3[$name[$k2]] = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2015/" . substr($num, 0, 2) . "/" . substr($num, 2, 2) . "/" . $value;
+                $data_3[$name[$k2]] = array('url' => "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2015/" . substr($num, 0, 2) . "/" . substr($num, 2, 2) . "/" . $value);
             }
 
+            $data_3 = curlMulti($data_3);
             foreach ($data_3 as $k3 => $v3) {
                 $parentId3 = $id2;
                 $sql = "SELECT toponymy_id FROM t_toponymy WHERE toponymy_name = '%s' AND toponymy_status = 1 AND toponymy_order = '%s'";
@@ -139,9 +136,7 @@ foreach ($data_0 as $key => $value) {
                 $orderArr_3 = array_merge(array($id3), $orderArr_2);
 
                 $data_3 = array();
-                $urlInfo = array('url' => $v3);
-                $html = curl($urlInfo);
-                $html = @iconv("GBK", "UTF-8", $html);
+                $html = @iconv("GBK", "UTF-8", $v3);
 
                 $name = pregHtml($html, $preg['name_01']);
                 if (!$name) {
@@ -225,7 +220,25 @@ function curl($urlInfo, $type = "GET", $info = false) {
         $urlArr = parse_url($urlInfo['url']);
 
         if (isset($urlInfo['params'])) {
-            $params = http_build_query($urlInfo['params']);
+            $params = "";
+            foreach ($urlInfo['params'] as $key => $row) {
+                if (is_array($row)) {
+                    foreach ($row as $value) {
+                        if ($params) {
+                            $params .= "&" . $key . "=" . $value;
+                        } else {
+                            $params .= $key . "=" . $value;
+                        }
+                    }
+                } else {
+                    if ($params) {
+                        $params .= "&" . $key . "=" . $row;
+                    } else {
+                        $params .= $key . "=" . $row;
+                    }
+                }
+            }
+
             if (isset($urlArr['query'])) {
                 if (preg_match("/&$/", $urlArr['query'])) {
                     $urlArr['query'] .= $params;
@@ -269,7 +282,7 @@ function curl($urlInfo, $type = "GET", $info = false) {
         "Upgrade-Insecure-Requests:1",
     );
     
-    $ch = curl_multi_init();
+    $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     if (isset($cookie)) {
         curl_setopt($ch, CURLOPT_COOKIE , $cookie);
@@ -299,6 +312,143 @@ function curl($urlInfo, $type = "GET", $info = false) {
     } else {
         return $result;
     }
+}
+
+/**
+ * Use the curl multi virtual browser
+ *
+ * @param array $urlInfos = array(
+ *     array('url' => "https://www.baidu.com/", 'params' => array('key' => 'test'), 'cookie' => 'cookie', 'type' => 'GET'),
+ *     array('url' => "https://www.google.com/", 'params' => array('key' => 'test'), 'cookie' => 'cookie', 'type' => 'POST'),
+ * )
+ * @param string $type = 'GET|POST'
+ * @param boolean $info = false|true
+ * @return string|array
+ */
+function curlMulti($urlInfos = array()) {
+    $curlArray = $data =  array();
+    $httpHead = array(
+        "Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Cache-Control:no-cache",
+        "Connection:keep-alive",
+        "Pragma:no-cache",
+        "Upgrade-Insecure-Requests:1",
+    );
+    $mh = curl_multi_init();
+
+    foreach($urlInfos as $key => $urlInfo) {
+        if (isset($urlInfo['type'])) {
+            $type = strtoupper(trim($urlInfo['type']));
+            unset($urlInfo['type']);
+        } else {
+            $type = 'GET';
+        }
+
+        if (isset($urlInfo['cookie'])) {
+            $cookie = $urlInfo['cookie'];
+            unset($urlInfo['cookie']);
+        }
+
+        if ($type == "POST") {
+            $url = $urlInfo['url'];
+            $data = $urlInfo['params'];
+        } else {
+            $urlArr = parse_url($urlInfo['url']);
+
+            if (isset($urlInfo['params'])) {
+                $params = "";
+                foreach ($urlInfo['params'] as $ke => $row) {
+                    if (is_array($row)) {
+                        foreach ($row as $value) {
+                            if ($params) {
+                                $params .= "&" . $ke . "=" . $value;
+                            } else {
+                                $params .= $ke . "=" . $value;
+                            }
+                        }
+                    } else {
+                        if ($params) {
+                            $params .= "&" . $ke . "=" . $row;
+                        } else {
+                            $params .= $ke . "=" . $row;
+                        }
+                    }
+                }
+
+                if (isset($urlArr['query'])) {
+                    if (preg_match("/&$/", $urlArr['query'])) {
+                        $urlArr['query'] .= $params;
+                    } else {
+                        $urlArr['query'] .= "&" . $params;
+                    }
+                } else {
+                    $urlArr['query'] = $params;
+                }
+            }
+
+            if (isset($urlArr['host'])) {
+                if (isset($urlArr['scheme'])) {
+                    $url = $urlArr['scheme'] . "://" . $urlArr['host'];
+                } else {
+                    $url = $urlArr['host'];
+                }
+
+                if (isset($urlArr['port'])) {
+                    $url .= ":" . $urlArr['port'];
+                }
+                if (isset($urlArr['path'])) {
+                    $url .= $urlArr['path'];
+                }
+                if (isset($urlArr['query'])) {
+                    $url .= "?" . $urlArr['query'];
+                }
+                if (isset($urlArr['fragment'])) {
+                    $url .= "#" . $urlArr['fragment'];
+                }
+            } else {
+                $url = $urlInfo['url'];
+            }
+        }
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        if (isset($cookie)) {
+            curl_setopt($ch, CURLOPT_COOKIE , $cookie);
+        }
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHead);
+        curl_setopt($ch, CURLOPT_ENCODING , "gzip");
+        if ($type == "POST") {
+            curl_setopt($ch, CURLOPT_POST, 1);
+            @curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        } else {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+        }
+        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36");
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_NOBODY, 0);
+
+        $curlArray[$key] = $ch;
+        curl_multi_add_handle($mh, $curlArray[$key]);
+    }
+
+    $running = 0;
+    do {
+        usleep(10000);
+        curl_multi_exec($mh, $running);
+    } while($running > 0);
+
+    foreach($urlInfos as $key => $urlInfo) {
+        $data[$key] = curl_multi_getcontent($curlArray[$key]);
+        curl_multi_remove_handle($mh, $curlArray[$key]);
+    }
+    curl_multi_close($mh);
+
+    return $data;
 }
 
 /**
